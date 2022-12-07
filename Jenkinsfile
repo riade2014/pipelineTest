@@ -1,4 +1,4 @@
-pipeline {
+/*pipeline {
     environment {
         JAVA_TOOL_OPTIONS = "-Duser.home=/var/maven"
     }
@@ -24,5 +24,35 @@ pipeline {
         always {
             cleanWs()
         }
+    }
+}*/
+
+pipeline{
+    agent any
+    
+   tools {
+        maven "maven" // You need to add a maven with name "3.6.0" in the Global Tools Configuration page
+    }
+    stages{
+        stage('git checkout'){
+            steps{
+                 git credentialsId:'credentID',url:'https://github.com/riade2014/pipelineTest'
+            }
+        }
+        stage('Build the application'){
+            steps{
+                bat' mvn clean install'
+            }
+        }
+        stage('Unit Test Execution'){
+            steps{
+                 bat 'mvn test'
+            }
+        }
+      stage('Build the image docker'){
+          steps{
+              bat 'docker build -t sylviane/maven-pipeline-demo .'
+          }
+      }
     }
 }
